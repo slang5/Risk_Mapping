@@ -235,7 +235,7 @@ if __name__ == "__main__":
                 x=0, y=100,
                 sizex=sizex, sizey=sizey,
                 sizing="stretch",  # or "fill", or "contain"
-                opacity=0.2,
+                opacity=0.8,
                 layer="below"
             )],
             height=600,
