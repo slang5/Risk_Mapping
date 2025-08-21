@@ -183,7 +183,7 @@ if __name__ == "__main__":
                 "reel": reel,
                 "criticite": criticite
             }
-            st.markdown(st.session_state["resultat"][threat_id])
+            #st.markdown(st.session_state["resultat"][threat_id])
         st.success("Toutes les étapes ont été validées !")
 
         import plotly.express as px
