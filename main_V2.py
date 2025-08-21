@@ -193,8 +193,8 @@ if __name__ == "__main__":
         for threat_id, result in st.session_state["resultat"].items():
             threat_name = st.session_state["threats_dict"][threat_id].get("nom", f"Threat {threat_id}")
             plot_data.append({
-                "threat_name": threat_name,
-                "impact_reel": result["reel"]*25,
+                "Nom de la menace": threat_name,
+                "impact reel": result["reel"]*25,
                 "occurence": result["occurence"]*25,
                 "criticite": result["criticite"]
             })
