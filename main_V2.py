@@ -204,13 +204,13 @@ if __name__ == "__main__":
         # Create scatter plot
         fig = px.scatter(
             df_plot,
-            x="impact_reel",
+            x="impact reel",
             y="occurence",
             size="criticite",
-            hover_name="threat_name",
+            hover_name="Nom de la menace",
             title="Analyse des Risques: Impact Réel vs Occurrence",
             labels={
-                "impact_reel": "Impact Réel",
+                "impact reel": "Impact Réel",
                 "occurence": "Occurrence",
                 "criticite": "Criticité"
             }
