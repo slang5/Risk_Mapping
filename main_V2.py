@@ -116,7 +116,7 @@ def get_data_for_one_threat(id:str) -> dict:
 
 if __name__ == "__main__":
     set_title_page()
-    
+
     num_threats:int = 0
     benef_exploitation:int = 1
     threats_dict:dict = {}
@@ -223,6 +223,8 @@ if __name__ == "__main__":
         sizex = 100
         sizey = 100
 
+        fig.update_xaxes(gridcolor="white", dtick=25)
+        fig.update_yaxes(gridcolor="white", dtick=25)
         fig.update_xaxes(range=[0, 100])
         fig.update_yaxes(range=[0, 100])
         fig.update_layout(
