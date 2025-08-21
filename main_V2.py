@@ -11,6 +11,7 @@ def set_title_page() -> None:
 def upload_file(current_step: int):
     uploaded_file = st.file_uploader("Importer un fichier EXCEL", type=["xlsx", "xlsm"])
     num_threats_default = 0
+    num_crises_default = 0
     benefice_exploitation_default = 1
     threats_dict = {}
 
@@ -20,7 +21,9 @@ def upload_file(current_step: int):
 
         # Try to get expected values from the file
         if "Nombre de crises" in df.columns:
-            num_threats_default = max(int(df["Nombre de crises"].iloc[0]), 0)
+            num_crises_default = max(int(df["Nombre de crises"].iloc[0]), 0)
+        if "Nombre de menaces" in df.columns:
+            num_threats_default = max(int(df["Nombre de menaces"].iloc[0]), 0)
         if "Bénéfice exploitation" in df.columns:
             benefice_exploitation_default = int(df["Bénéfice exploitation"].iloc[0])
 
@@ -48,12 +51,13 @@ def upload_file(current_step: int):
                     }
                 }
     
-    return num_threats_default, benefice_exploitation_default, threats_dict
+    return num_crises_default, num_threats_default, benefice_exploitation_default, threats_dict
 
 def export_threats_dict_to_excel(threats_dict):
     filename=f"menaces_export_{utils.uuid.uuid1()}.xlsx"
     rows = []
-    nb_crises = st.session_state.get("num_threats", 0)
+    nb_crises = st.session_state.get("num_crises", 0)
+    nb_menaces = st.session_state.get("num_threats", 0)
     benef_exp = st.session_state.get("benefice_exploitation", 0)
     for threat_id, data in threats_dict.items():
         flat = data.copy()
@@ -67,9 +71,11 @@ def export_threats_dict_to_excel(threats_dict):
         flat.pop("data_impact_financier", None)
         flat.pop("mesures", None)
         #add global columns
+        flat["Nombre de menaces"] = nb_menaces
         flat["Nombre de crises"] = nb_crises
         flat["Bénéfice exploitation"] = benef_exp
         rows.append(flat)
+    
     df = pd.DataFrame(rows)
     output = io.BytesIO()
     df.to_excel(output, index=False)
@@ -79,9 +85,15 @@ def export_threats_dict_to_excel(threats_dict):
 
 def get_nb_crises(num_threats_default) -> int:
     st.markdown(utils.create_styled_div("Entrez le nombre de crises sur une année :", 18), unsafe_allow_html=True)
-    num_threats = st.number_input("Nombre de crises", min_value=0, step=1, value=num_threats_default, key="num_threats_input")
+    num_crises = st.number_input("Nombre de crises", min_value=0, step=1, value=num_threats_default, key="num_crisis_input")
 
-    return num_threats
+    return num_crises
+
+def get_nb_menaces(num_threats_default) -> int:
+    st.markdown(utils.create_styled_div("Entrez le nombre de menaces à saisir :", 18), unsafe_allow_html=True)
+    num_menaces = st.number_input("Nombre de menaces", min_value=0, step=1, value=num_threats_default, key="num_threats_input")
+
+    return num_menaces
 
 def get_benef_exp(benef_exp_default) -> int:
     st.markdown(utils.create_styled_div("Entrez le bénéfice d'exploitation annuelle de l'entreprise (€) :", 18), unsafe_allow_html=True)
@@ -117,6 +129,7 @@ def get_data_for_one_threat(id:str) -> dict:
 if __name__ == "__main__":
     set_title_page()
 
+    num_crises:int = 0
     num_threats:int = 0
     benef_exploitation:int = 1
     threats_dict:dict = {}
@@ -127,7 +140,7 @@ if __name__ == "__main__":
     if st.session_state["step"] <= 1:
         with st.form("upload_form"):
             st.markdown("Veuillez importer un fichier Excel contenant les menaces à évaluer :", unsafe_allow_html=True)
-            num_threats, benef_exploitation, threats_dict = upload_file(st.session_state["step"])
+            num_crises, num_threats, benef_exploitation, threats_dict = upload_file(st.session_state["step"])
             submit_button_importer = st.form_submit_button("Importer")
 
             if submit_button_importer:
@@ -138,7 +151,8 @@ if __name__ == "__main__":
     if st.session_state["step"] <= 1:
         
         with st.form("step1_form"):
-            st.session_state["num_threats"] = get_nb_crises(num_threats)
+            st.session_state["num_crises"] = get_nb_crises(num_crises)
+            st.session_state["num_threats"] = get_nb_menaces(num_threats)
             st.session_state["benefice_exploitation"] = get_benef_exp(benef_exploitation)
             st.session_state["threats_dict"] = threats_dict
             submit_button = st.form_submit_button("Valider")
@@ -169,7 +183,7 @@ if __name__ == "__main__":
         for threat_id, data in st.session_state["threats_dict"].items():
             impact_financier = utils.calc_impact_financier(data["data_impact_financier"], st.session_state["benefice_exploitation"])["impact_financier"]
             impact_reputation = utils.calc_impact_reputation(data["data_impact_reputation"])
-            occurence = utils.calc_occurence(data["occurence"], N_occurrences)
+            occurence = utils.calc_occurence(data["occurence"], st.session_state["num_crises"])
             impact_inherent = utils.calc_inherent(impact_reputation, impact_financier)
             mesures = utils.calc_reduction(data["mesures"])
             reel = utils.calc_impact_reel(impact_inherent, mesures)
@@ -228,8 +242,8 @@ if __name__ == "__main__":
         fig.update_xaxes(range=[0, 100])
         fig.update_yaxes(range=[0, 100])
         fig.update_layout(
-            xaxis_title="Impact Réel",
-            yaxis_title="Occurrence",
+            xaxis_title="Impact Réel (%)",
+            yaxis_title="Occurrence (%)",
             showlegend=True, 
             images=[dict(
                 source=img_base64,

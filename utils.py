@@ -75,8 +75,7 @@ def ui_get_categorie(id:str, initial_value:str="") -> str:
 
 def ui_get_occurence(id:str, initial_value:int=1) -> int:
 
-    st.markdown("Veuillez saisir une valeur d'occurrence sur l'année (entier entre 1 et 4):", unsafe_allow_html=True)
-    occurence:int = st.number_input("Occurrence", min_value=1, max_value=4, value=initial_value, step=1, key=f"occurence_{id}")
+    occurence:int = st.number_input("Veuillez saisir le nombre de crises liées à cette menace", min_value=1, value=initial_value, step=1, key=f"occurence_{id}")
 
     return occurence
 
@@ -109,7 +108,8 @@ def ui_get_impact_reputation(id:str, initial_value:int=1) -> int:
         max_value=4, 
         value=initial_value, 
         step=1, 
-        key=f"impact_reputation_{id}"
+        key=f"impact_reputation_{id}",
+        help="1 = Très faible : impact non significatif sur les parties prenantes, \n2 = Faible : impact sur un petit nombre de personnes ou groupe, \n3 = Elevé : impact sur la majorité des parties prenantes ou un nombre significatif, \n4 = Très élevé : impact sur (presque) toutes les parties prenantes"
     )
     return impact_reputation
 
