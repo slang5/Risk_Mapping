@@ -265,7 +265,7 @@ if __name__ == "__main__":
         df_table["Rang"] = df_table.index + 1
         top_n = min(st.session_state["num_threats"], 5)
 
-        st.dataframe(df_table.head(top_n))
+        st.dataframe(df_table.head(top_n), hide_index=True)
 
         st.plotly_chart(fig, use_container_width=True)
     if st.session_state["step"] >= 1:
