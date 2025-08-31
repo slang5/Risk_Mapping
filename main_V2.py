@@ -189,6 +189,7 @@ if __name__ == "__main__":
             reel = utils.calc_impact_reel(impact_inherent, mesures)
             criticite = utils.calc_criticite(occurence, reel)
             st.session_state["resultat"][threat_id] = {
+                "categorie_risque": data["categorie_risque"],
                 "impact_financier": impact_financier,
                 "impact_reputation": impact_reputation,
                 "occurence": occurence,
@@ -208,9 +209,10 @@ if __name__ == "__main__":
             threat_name = st.session_state["threats_dict"][threat_id].get("nom", f"Threat {threat_id}")
             plot_data.append({
                 "Nom de la menace": threat_name,
-                "impact reel": result["reel"]*25,
-                "occurence": result["occurence"]*25,
-                "criticite": result["criticite"]
+                "Type de risque": result["categorie_risque"],
+                "Impact reel": result["reel"]*25,
+                "Occurrence": result["occurence"]*25,
+                "Criticite": result["criticite"]
             })
 
         df_plot = pd.DataFrame(plot_data)
@@ -218,15 +220,15 @@ if __name__ == "__main__":
         # Create scatter plot
         fig = px.scatter(
             df_plot,
-            x="impact reel",
-            y="occurence",
-            size="criticite",
+            x="Impact reel",
+            y="Occurrence",
+            size="Criticite",
             hover_name="Nom de la menace",
             title="Analyse des Risques: Impact Réel vs Occurrence",
             labels={
-                "impact reel": "Impact Réel",
-                "occurence": "Occurrence",
-                "criticite": "Criticité"
+                "Impact reel": "Impact reel",
+                "Occurrence": "Occurrence",
+                "Criticite": "Criticite"
             }
         )
         # Read your local image file and encode it as base64
@@ -259,7 +261,7 @@ if __name__ == "__main__":
         )
 
         df_table = pd.DataFrame(plot_data)
-        df_table = df_table.sort_values(by="criticite", ascending=False).reset_index(drop=True)
+        df_table = df_table.sort_values(by="Criticite", ascending=False).reset_index(drop=True)
         df_table["Rang"] = df_table.index + 1
         top_n = min(st.session_state["num_threats"], 5)
 
