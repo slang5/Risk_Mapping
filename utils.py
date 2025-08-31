@@ -218,10 +218,10 @@ def from_4_to_100(n:float) -> float:
     elif n > 4:
         return 100
     else:
-        return n * 25
+        return round(n * 25, 4)
 
 def calc_criticite(occurence:float=0.0, impact_reel:float=0.0) -> float:
-    return from_4_to_100(occurence) + from_4_to_100(impact_reel)
+    return round(from_4_to_100(occurence) + from_4_to_100(impact_reel), 4)
 
 def create_styled_div(text: str, font_size: int, center: bool = False) -> str:
     style = f"font-size: {font_size}px;"
